@@ -1,0 +1,6 @@
+.DS_Store
+mydos.iso
+*.bin
+*.o
+*.swp
+._*
