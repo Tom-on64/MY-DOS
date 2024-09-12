@@ -1,14 +1,28 @@
 AS := nasm
+LD := i686-elf-ld
 
-include make.config
+BOOT_SRC := ./boot/boot.s
+KERNEL_SRC := ./kernel/*.s
+BIN := ./bin
+ISO := ./mydos.iso
 
-SRC := ./src/boot.s
-ISO := mydos.iso
+.PHONY: os run clean
 
-.PHONY: os clean
+os: dirs $(BIN)/boot.bin $(BIN)/kernel.bin
+	dd if=/dev/zero of=$(ISO) bs=512 count=2880 status=none
+	dd if=$(BIN)/boot.bin of=$(ISO) bs=512 seek=0 conv=notrunc status=none
+	dd if=$(BIN)/kernel.bin of=$(ISO) bs=512 seek=1 conv=notrunc status=none
 
-os: $(OBJ)
-	$(AS) -fbin -o $(ISO) $(SRC)
+$(BIN)/boot.bin: $(BOOT_SRC)
+	$(AS) -felf32 -o $(BIN)/boot.o $<
+	$(LD) -T $(BOOT_SRC:.s=.ld) -o $@ $(BIN)/boot.o
+
+# TODO
+$(BIN)/kernel.bin: $(KERNEL_SRC)
+	touch $@
+
+dirs:
+	[[ -d $(BIN) ]] || mkdir $(BIN)
 
 run:
 	qemu-system-x86_64\
@@ -19,5 +33,5 @@ run:
 
 clean:
 	rm -rf ./bin
-	rm -f ./**/*.o
+	rm -f $(ISO)
 
