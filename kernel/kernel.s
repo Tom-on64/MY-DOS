@@ -1,7 +1,18 @@
-;;
-;; kernel.s
-;; The OSes kernel
-;;
+bits 16
 
-;; TODO: Write this
+%include "kernel/output.s"
+
+section .text
+section entry
+_start:
+    call cls
+    mov si, msg
+    call puts
+
+    cli
+.halt: hlt
+    jmp .halt
+
+section .data
+msg: db "Hello, World!", 0
 

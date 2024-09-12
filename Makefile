@@ -17,9 +17,9 @@ $(BIN)/boot.bin: $(BOOT_SRC)
 	$(AS) -felf32 -o $(BIN)/boot.o $<
 	$(LD) -T $(BOOT_SRC:.s=.ld) -o $@ $(BIN)/boot.o
 
-# TODO
 $(BIN)/kernel.bin: $(KERNEL_SRC)
-	touch $@
+	$(AS) -felf32 -o $(BIN)/kernel.o ./kernel/kernel.s
+	$(LD) -T ./kernel/kernel.ld -o $@ $(BIN)/kernel.o
 
 dirs:
 	[[ -d $(BIN) ]] || mkdir $(BIN)
