@@ -5,30 +5,35 @@ section entry
     jmp _start
 
 ;; Header files
-%include "kernel/output.s"
-%include "kernel/input.s"
+%include "inc/output.s"
+%include "inc/input.s"
+%include "inc/string.s"
 
 ;; Main
 section .text
 _start:
-    call cls
-    print "Welcome to MY-DOS!",ENDL
+    call cls    ; Clear screen
+    print "Welcome to MY-DOS!", ENDL
 
-.input:
-    call getc
-    cmp al, 0x0d
-    je .newline
+input:
+    print "> "
+.getchar:
+    call getc   ; Get character from user in al
+    cmp al, ENDL; Check if user pressed Enter
+    je .newline ; True? -> Newline
+
+    ; Else print the character 
     mov ah, [attr]
     mov bx, [cursor]
     call putc
     inc word [cursor]
-    jmp .input
+    jmp .getchar  ; Get next character
 
 .newline:
     mov bx, [cursor]
-    call newline
+    call newline    ; Calculate new cursor position
     mov [cursor], bx
-    jmp .input
+    jmp input  ; Get more input
 
 .halt:
     cli
