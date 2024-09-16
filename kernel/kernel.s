@@ -45,3 +45,6 @@ section .data
 bufLen: db 0
 buffer: times 256 db 0
 
+testStr1: db "Hello, World!", 0
+testStr2: db 24
+
