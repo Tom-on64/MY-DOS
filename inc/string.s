@@ -3,7 +3,7 @@
 
 ;; Compares two strings
 ;; Args: str1, str2
-;; Rets: eax = result
+;; Rets: carry flag set = strings match
 %macro strcmp 2
     push si
     push di
