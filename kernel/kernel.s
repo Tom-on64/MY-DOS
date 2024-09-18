@@ -5,6 +5,7 @@ section entry
     jmp _start
 
 ;; Header files
+%include "inc/meta.s"
 %include "inc/output.s"
 %include "inc/input.s"
 %include "inc/string.s"
@@ -13,7 +14,8 @@ section entry
 section .text
 _start:
     call cls    ; Clear screen
-    print "Welcome to MY-DOS!", ENDL
+    mov si, str_welcome
+    call prints
 
 input:
     print "> "
@@ -62,20 +64,23 @@ runCommand:
     jz .test
     strcmp buffer, cmd_exit
     jz .exit
+    strcmp buffer, cmd_cls
+    jz .cls
     ;; No command
     print "Unknown command!",ENDL
     jmp input
 ;; Prints help message
 .help:
-    mov bx, [cursor]
-    mov ah, [attr]
-    mov si, str_helpMsg
-    call puts
-    mov [cursor], bx
+    mov si, str_help
+    call prints
     jmp input
 ;; Temporary test command
 .test:
     print "Testing...",ENDL
+    jmp input
+;; Clears the screen
+.cls:
+    call cls
     jmp input
 ;; Halts the system
 .exit:
@@ -91,16 +96,18 @@ runCommand:
 section .data
 
 ;; Strings
-str_helpMsg: db "MY-DOS commands:",ENDL,\
+str_help: db    "Available commands:",ENDL,\
                 "CLS        | Clears the screen",ENDL,\
                 "EXIT       | Exits MY-DOS",ENDL,\
                 "HELP       | Prints this help message",ENDL,\
                 "TEST       | TEMPORARY TEST COMMAND",ENDL,0
+str_welcome: db "Welcome to MY-DOS V",VERSION,"!",ENDL,0
 
 ;; Command constants
 cmd_help: db "help", 0
 cmd_test: db "test", 0
 cmd_exit: db "exit", 0
+cmd_cls: db "cls", 0
 
 ;; Buffer TODO: make it not overflow :)
 buffer: times 256 db 0

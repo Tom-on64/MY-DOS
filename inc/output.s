@@ -7,15 +7,11 @@
 %define COLS 80
 
 %macro print 1+
-    section .data
-%%string:
-    db %1, 0
-    section .text
+section .data
+%%string: db %1, 0
+section .text
     mov si, %%string
-    mov ah, [attr]
-    mov bx, [cursor]
-    call puts
-    mov [cursor], bx
+    call prints
 %endmacro
 
 section .text
@@ -71,6 +67,16 @@ puts:
 .done:
     pop ax
     pop si
+    ret
+
+;; Prints a string at the cursor position
+;; Args:
+;;  si - string
+prints:
+    mov ah, [attr]
+    mov bx, [cursor]
+    call puts
+    mov [cursor], bx
     ret
 
 ;; Clears the screen
