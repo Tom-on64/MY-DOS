@@ -50,21 +50,38 @@ input:
     mov [cursor], bx
     cmp di, buffer  ; Check if there was a command
     je input        ; No command? goto input
-    mov al, ENDL
-    stosb           ; Store newline at the end of string
     xor al, al
     stosb           ; Terminate string
 
 ;; Expects a command in buffer
 runCommand:
-    print "INPUT: "
-    mov si, buffer
+    ;; Check
+    strcmp buffer, cmd_help
+    jz .help
+    strcmp buffer, cmd_test
+    jz .test
+    strcmp buffer, cmd_exit
+    jz .exit
+    ;; No command
+    print "Unknown command!",ENDL
+    jmp input
+;; Prints help message
+.help:
     mov bx, [cursor]
     mov ah, [attr]
+    mov si, str_helpMsg
     call puts
     mov [cursor], bx
     jmp input
-
+;; Temporary test command
+.test:
+    print "Testing...",ENDL
+    jmp input
+;; Halts the system
+.exit:
+    mov dx, 0x604
+    mov ax, 0x2000
+    out dx, ax
 .halt:
     cli
     hlt
@@ -72,10 +89,19 @@ runCommand:
 
 ;; Variables etc.
 section .data
-bufLen: dw 0
-buffer: times 256 db 0
+
+;; Strings
+str_helpMsg: db "MY-DOS commands:",ENDL,\
+                "CLS        | Clears the screen",ENDL,\
+                "EXIT       | Exits MY-DOS",ENDL,\
+                "HELP       | Prints this help message",ENDL,\
+                "TEST       | TEMPORARY TEST COMMAND",ENDL,0
 
 ;; Command constants
 cmd_help: db "help", 0
 cmd_test: db "test", 0
+cmd_exit: db "exit", 0
+
+;; Buffer TODO: make it not overflow :)
+buffer: times 256 db 0
 

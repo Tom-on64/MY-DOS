@@ -3,23 +3,28 @@
 
 ;; Compares two strings
 ;; Args: str1, str2
-;; Rets: carry flag set = strings match
+;; Rets: ZF = 1 -> Strings are equal
+;;       CF = 1 -> String 1 < String 2
+;;       CF = 0 -> String 1 > String 2
 %macro strcmp 2
-    push si
-    push di
-    push cx
+    pusha
 
-    mov si, %1
-    mov di, %2
-    mov cx, -1
-    xor eax, eax
-    repe cmpsb
-    seta al
+    mov si, %1  ; String 1  
+    mov di, %2  ; String 2
+%%loop:
+    lodsb
+    scasb
+    jne %%notEqual
+    test al, al
+    jnz %%loop
+%%equal:
+    xor ax, ax
+    jmp %%done
+%%notEqual:
     sbb ax, ax
-
-    pop cx
-    pop di
-    pop si
+    test sp, sp
+%%done:
+    popa
 %endmacro
 
 ;; Copies a string into a buffer

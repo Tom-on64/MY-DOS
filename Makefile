@@ -3,6 +3,7 @@ LD := i686-elf-ld
 
 BOOT_SRC := ./boot/boot.s
 KERNEL_SRC := ./kernel/*.s
+HEADERS := ./inc/*.s
 BIN := ./bin
 ISO := ./mydos.iso
 
@@ -17,7 +18,7 @@ $(BIN)/boot.bin: $(BOOT_SRC)
 	$(AS) -felf32 -o $(BIN)/boot.o $<
 	$(LD) -T $(BOOT_SRC:.s=.ld) -o $@ $(BIN)/boot.o
 
-$(BIN)/kernel.bin: $(KERNEL_SRC)
+$(BIN)/kernel.bin: $(KERNEL_SRC) $(HEADERS)
 	$(AS) -felf32 -o $(BIN)/kernel.o ./kernel/kernel.s
 	$(LD) -T ./kernel/kernel.ld -o $@ $(BIN)/kernel.o
 
