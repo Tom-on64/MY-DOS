@@ -79,6 +79,16 @@ prints:
     mov [cursor], bx
     ret
 
+;; Prints a character at the cursor position
+;; Args:
+;;  al - character
+printc:
+    mov ah, [attr]
+    mov bx, [cursor]
+    call putc
+    inc word [cursor]
+    ret
+
 ;; Clears the screen
 ;; Args:
 cls:

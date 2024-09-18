@@ -31,19 +31,15 @@ input:
     je .backspace
 
     stosb               ; mov [di], al; inc di
-    mov ah, [attr]      ; Color attribute byte
-    mov bx, [cursor]    ; Cursor
-    call putc           ; Print character
-    inc word [cursor]   ; Increment cursor
+    call printc         ; Print character
     jmp .getchar        ; Get next character
 
 .backspace:
     dec byte [cursor]   ; Go back one space
     dec di              ; decrement pointer to buffer
-    mov bx, [cursor]    ; Cursor
-    mov ah, [attr]      ; Color attribute 
     mov al, ' '         ; Remove last character
-    call putc           ; Draw
+    call printc         ; Print
+    dec byte [cursor]   ; Go back one space
     jmp .getchar        ; Get another character
 
 .newline:
@@ -66,6 +62,7 @@ runCommand:
     jz .exit
     strcmp buffer, cmd_cls
     jz .cls
+
     ;; No command
     print "Unknown command!",ENDL
     jmp input
