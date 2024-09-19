@@ -1,0 +1,85 @@
+--- Filesystem ---
+
+[Filetable design]
+- Sector 0 is the boot sector
+- Sector 1 is the superblock
+- The superblock contains info about the filesystem
+- A directory entry is 16 bytes
+- A directory takes up 1 sector and is an array of 32 dir entries (512/16 = 32)
+- A file can be up to 127.5kB
+- All links are symbolic and always take up only 1 sector (512B)
+- A device only acts like a file, but it's contents are not stored on the disk (only it's metadata)
+
+[Superblock]
+- Always will be in sector 1
+- Structure: (512B)
+    FS Name     char[8]
+    Root Loc    u16
+
+[Directory Entry]
+- 16 Bytes per entry
+- Max. 32 entries per directory
+- Filename max. 10 ASCII bytes
+- 1 Byte for flags:
+    ttxrwxxx
+    | |||'--- Reserved
+    | ||'---- Writable
+    | |'----- Readable
+    | '------ Executable
+    '-------- Type
+- Filetypes:
+    00 - File
+    01 - Directory
+    10 - Link
+    11 - Device
+- 1 Byte for file length in sectors (1 sector = 512B)
+- 2 Bytes for address on disk
+- Entry structure: (16B)
+    Filename    char[10]
+    Flags       u8
+    Length      u8
+    Location    u16
+    Reserved    u8[2]
+
+[Directory]
+- A directory always takes up 1 sector (512B)
+- Since 1 sector is 512B and an entry is 16B, a directory can contain up to 32 Entries
+
+[File]
+- A file can take up max. 255 sectors (127.5kB)
+- A file name can be max. 10 ASCII bytes
+
+[Link]
+- A link always takes up one sector
+- All links are symbolic, ie. they don't contain any of the linked files actuall data, only it's path
+- It contains an absolute path to the linked file in plain text
+
+[Device]
+# TODO
+
+[Acessing files]
+- Filepaths start at the root directory (it's location is in the superblock)
+- System will need to recursively find subdirectories untill the requested file is found
+- Then the system must check the dir entries flags and verify that the operation is permited
+- If everything is correct the system may use the length and location in the entry to access the disk
+
+- Example:
+```
+Requested file: '/dir/file.txt'
+Systems actions: 
+    Read ROOT
+    Find dir In ROOT
+    If FLAGS In dir AreGood?
+        Read dir
+        Find file.txt In dir
+        If FLAGS In file.txt AreGood?
+            Read file.txt
+            # Do Something
+        Else
+            Error "Failed to read /dir/file.txt!"
+        Done
+    Else
+        Error "Failed to read /dir!"
+    Done
+```
+
