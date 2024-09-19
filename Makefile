@@ -9,10 +9,10 @@ ISO := ./mydos.iso
 
 .PHONY: os run clean
 
-os: dirs $(BIN)/boot.bin $(BIN)/kernel.bin
-	dd if=/dev/zero of=$(ISO) bs=512 count=2880 status=none
-	dd if=$(BIN)/boot.bin of=$(ISO) bs=512 seek=0 conv=notrunc status=none
-	dd if=$(BIN)/kernel.bin of=$(ISO) bs=512 seek=1 conv=notrunc status=none
+os: dirs $(ISO) 
+	
+$(ISO): $(BIN)/boot.bin $(BIN)/kernel.bin
+	./buildiso.sh $(ISO)
 
 $(BIN)/boot.bin: $(BOOT_SRC)
 	$(AS) -felf32 -o $(BIN)/boot.o $<
