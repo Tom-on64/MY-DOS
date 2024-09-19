@@ -11,7 +11,7 @@ ISO := ./mydos.iso
 
 os: dirs $(ISO) 
 	
-$(ISO): $(BIN)/boot.bin $(BIN)/kernel.bin
+$(ISO): ./buildiso.sh $(BIN)/boot.bin $(BIN)/kernel.bin
 	./buildiso.sh $(ISO)
 
 $(BIN)/boot.bin: $(BOOT_SRC)

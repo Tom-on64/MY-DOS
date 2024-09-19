@@ -1,6 +1,7 @@
 bits 16
 
-%define KERNEL_SEGMENT 0x100
+%define KERNEL_SEGMENT  0x100   ; 0x1000
+%define FS_SEGMENT      0xa00   ; 0xa000
 
 ;; Code
 section .text
@@ -32,7 +33,7 @@ _start:
 
     mov ch, 0   ; Cylinder
     mov dh, 0   ; Head
-    mov cl, 2   ; Sector
+    mov cl, 4   ; Sector
     mov al, 10  ; Sector count 5kB
     mov dl, [driveNum]
 
