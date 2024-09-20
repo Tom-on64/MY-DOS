@@ -6,6 +6,8 @@
 %define ROWS 25
 %define COLS 80
 
+;; Prints a string to the screen
+;; Args: bytes of a string
 %macro print 1+
 section .data
 %%string: db %1, 0
