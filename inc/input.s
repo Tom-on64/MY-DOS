@@ -14,6 +14,8 @@ gets:
     push ax
     push bx
     push cx
+    push dx
+    mov dx, cx
 .loop:
     call getc       ; Read in character
     cmp al, 0x08    ; Backspace
@@ -27,10 +29,13 @@ gets:
     call printc     ; Print the character
     jmp .loop       ; Get next
 .backspace:
+    cmp cx, dx
+    je .loop
     dec byte [cursor]   ; Go back one space
     mov al, ' '         ; We will print a space to erase the last character
     call printc         ; Erase last character
     dec byte [cursor]   ; Go back again
+    inc cx              ; One character has freed up
     jmp .loop
 .newline:
     mov bx, [cursor]
@@ -40,6 +45,7 @@ gets:
     xor al, al  ; Null byte
     stosb       ; Terminate string
 
+    pop dx
     pop cx
     pop bx
     pop ax

@@ -1,7 +1,6 @@
 bits 16
 
 %define KERNEL_SEGMENT  0x100   ; 0x1000
-%define FS_SEGMENT      0xa00   ; 0xa000
 
 ;; Code
 section .text
@@ -11,9 +10,11 @@ _start:
 
     ;; Segment setup
     mov ax, 0
-    mov ds, ax
-    mov es, ax
-    mov ss, ax  ; Setup stack
+    mov ds, ax  ; Data segment
+    mov es, ax  ; Extra segment     (GP)
+    mov gs, ax  ; General segment   (GP)
+    mov fs, ax  ; Filesys segment   (GP)
+    mov ss, ax  ; Stack segment
     mov sp, 0x7c00
 
     ;; Clear screen
