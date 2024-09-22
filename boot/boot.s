@@ -26,6 +26,14 @@ _start:
     mov cx, 0x2607  ; Invisible cursor
     int 0x10
 
+    ;; Check if LBA is supported
+    mov si, lbaErr
+    mov ah, 0x41
+    mov bx, 0x55aa
+    mov dl, [driveNum]
+    int 0x13
+    jc error
+
     ;; Load and run Kernel
     mov bx, KERNEL_SEGMENT
     mov es, bx
@@ -40,7 +48,10 @@ _start:
     mov ah, 0x02
     int 0x13
 
+    mov si, errMsg
     jc error
+
+    mov dl, [driveNum]
 
     mov ax, KERNEL_SEGMENT
     mov ds, ax
@@ -50,8 +61,9 @@ _start:
 
     jmp KERNEL_SEGMENT:0x0000 ; Far jump implicitly sets the code segment
 
+;; Prints a string
+;; si - error message
 error:
-    mov si, errMsg
     mov ah, 0x0e
 .printLoop:
     lodsb
@@ -67,7 +79,8 @@ error:
 ;; Data
 section .data
 driveNum: db 0
-errMsg: db "Failed to read kernel!"
+errMsg: db "Failed to read kernel!",0
+lbaErr: db "LBA addressing not supported. Is your PC from 1993??",0
 
 section .sign
 dw 0xaa55
