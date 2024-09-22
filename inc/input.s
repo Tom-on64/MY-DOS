@@ -3,6 +3,7 @@
 
 %include "inc/output.s"
 
+section .text
 ;; Gets a string from the user
 ;; Args: 
 ;;  di - buffer
@@ -36,12 +37,13 @@ gets:
     call newline
     mov [cursor], bx
 
+    xor al, al  ; Null byte
+    stosb       ; Terminate string
+
     pop cx
     pop bx
     pop ax
     ret
-
-section .text
 
 ;; Gets a character from the user
 ;; Rets:
