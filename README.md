@@ -7,7 +7,7 @@ My custom version of a DOS (Disk Operating System)
     - [ ] Input
     - [ ] Output
     - [ ] Memory allocation
-    - [ ] Disk read/write
+    - [x] Disk read/write
     - [ ] Filesystem r/w
     - [x] String manipulation
 - [ ] Rewrite kernel
